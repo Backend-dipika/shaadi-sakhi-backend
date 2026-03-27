@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Events extends Model
 {
-    protected $fillable = [   
+    protected $fillable = [
         'uuid',
         'title',
         'description',
@@ -19,4 +19,9 @@ class Events extends Model
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
     ];
+
+    public function metadata()
+    {
+        return $this->hasMany(EventMetadata::class, 'event_id');
+    }
 }

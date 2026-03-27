@@ -13,12 +13,55 @@ use Illuminate\Support\Str;
 
 class ContactMessageController extends Controller
 {
+
+    /**
+     * Get paginated list of contact messages.
+     *
+     * @group Contact Messages
+     *
+     * @response 200 {
+     *   "message": "Contact Message fetched successfully",
+     *   "data": [
+     *       {
+     *           "id": 1,
+     *           "name": "John Doe",
+     *           "email": "john@example.com",
+     *           "message": "Hello!",
+     *           "created_at": "2026-03-26T10:00:00Z",
+     *           "updated_at": "2026-03-26T10:00:00Z"
+     *       }
+     *   ]
+     * }
+     * @response 500 {
+     *   "message": "Something went wrong"
+     * }
+     */
+
+    public function index(Request $request)
+    {
+        try {
+            $contact = ContactMessage::latest()->paginate(10);
+
+            return response()->json([
+                'message' => 'Contact Message fetched successfully',
+                'data' => $contact
+            ], 200);
+        } catch (Exception $e) {
+            Log::warning('Error in contact', [
+                'message' =>  $e->getMessage(),
+            ]);
+            return response()->json([
+                'message' => 'Something went wrong',
+            ], 500);
+        }
+    }
+
     /**
      * Submit Contact Message
      * 
      * Allows users to send a contact message without login.
      * 
-     * @group Contact
+     * @group Contact Messages
      * 
      * @bodyParam name string required User full name. Example: John Doe
      * @bodyParam email string required User email address. Example: john@example.com

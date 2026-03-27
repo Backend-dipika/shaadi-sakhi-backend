@@ -19,7 +19,7 @@ class CollaborationController extends Controller
      * 
      * Fetch all available categories.
      * 
-     * @group Collaboration
+     * @group Categories
      * 
      * @response 200 {
      *  "message": "Categories fetched successfully",
@@ -54,11 +54,52 @@ class CollaborationController extends Controller
     }
 
     /**
+     * Get paginated list of exhibition enquiries.
+     *
+     * @group Exhibition Enquiries
+     * 
+     * @response 200 {
+     *   "message": "Exhibition Enquiry fetched successfully",
+     *   "data": [
+     *       {
+     *           "id": 1,
+     *           "name": "Jane Smith",
+     *           "email": "jane@example.com",
+     *           "enquiry": "I want to participate.",
+     *           "created_at": "2026-03-26T10:00:00Z",
+     *           "updated_at": "2026-03-26T10:00:00Z"
+     *       }
+     *   ]
+     * }
+     * @response 500 {
+     *   "message": "Something went wrong"
+     * }
+     */
+    public function index(Request $request)
+    {
+        try {
+            $enquiry = ExhibitionEnquiry::latest()->paginate(10);
+
+            return response()->json([
+                'message' => 'Exhibition Enquiry fetched successfully',
+                'data' => $enquiry
+            ], 200);
+        } catch (Exception $e) {
+            Log::warning('Error in enquiry', [
+                'message' =>  $e->getMessage(),
+            ]);
+            return response()->json([
+                'message' => 'Something went wrong',
+            ], 500);
+        }
+    }
+
+    /**
      * Store Exhibition Enquiry
      * 
      * Submit a collaboration/exhibition enquiry.
      * 
-     * @group Collaboration
+     * @group Exhibition Enquiries
      * 
      * @bodyParam name string required User full name. Example: John Doe
      * @bodyParam brand_name string required Brand name. Example: Nike

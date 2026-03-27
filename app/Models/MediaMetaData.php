@@ -11,4 +11,8 @@ class MediaMetaData extends Model
         'type',
         'path',
     ];
+    public function media()
+    {
+        return $this->belongsTo(Media::class, 'media_id');
+    }
 }
