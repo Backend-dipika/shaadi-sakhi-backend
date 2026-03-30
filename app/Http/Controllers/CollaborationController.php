@@ -161,7 +161,12 @@ class CollaborationController extends Controller
 
             // Send Email
             try {
-                $categoryName = Category::find($request->category_id)->value('name');
+                $categoryName = Category::where('id',$request->category_id)->value('name');
+                Log::info('Collaboration Enquiry', [
+                    'category_id' => $request->category_id,
+                    'category_name' => $categoryName,
+                    'other_category' => $request->other_category,
+                ]);
                 Log::info('sakhi', ['MAIL_SEND_TO' => config('mail.admin_email')]);
                 Mail::to(config('mail.admin_email'))->queue(new CollaborationFormMail($enquiry, $categoryName));
             } catch (Exception $e) {
