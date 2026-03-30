@@ -4,5 +4,11 @@
 <p><strong>Email:</strong> {{ $collab->email }}</p>
 <p><strong>Phone:</strong> {{ $collab->contact_number }}</p>
 <p><strong>Brand Name:</strong> {{ $collab->brand_name }}</p>
-<p><strong>Category:</strong> {{ $categoryName }}</p>
+<p><strong>Category:</strong> 
+    @if($categoryName === 'Others')
+        {{ $collab->other_category }}
+    @else
+        {{ $categoryName }}
+    @endif
+</p>
 <p><strong>Social Media:</strong> {{ $collab->social_media }}</p>
