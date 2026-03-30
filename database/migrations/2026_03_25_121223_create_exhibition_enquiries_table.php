@@ -16,10 +16,10 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
 
             $table->string('name');
-             $table->string('brand_name');
+            $table->string('brand_name');
             $table->string('email');
             $table->string('contact_number', 15)->nullable();
-
+            $table->string('other_category')->nullable();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
 
             $table->string('social_media');

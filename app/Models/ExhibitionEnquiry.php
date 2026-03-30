@@ -12,6 +12,7 @@ class ExhibitionEnquiry extends Model
         'brand_name',
         'email',
         'contact_number',
+        'other_category',
         'category_id',
         'social_media',
     ];

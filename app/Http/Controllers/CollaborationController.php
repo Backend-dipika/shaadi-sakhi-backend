@@ -105,6 +105,7 @@ class CollaborationController extends Controller
      * @bodyParam brand_name string required Brand name. Example: Nike
      * @bodyParam email string required User email. Example: john@example.com
      * @bodyParam contact_number string required Phone number. Example: 9876543210
+     * @bodyParam other_category string nullable Others Category. Example: Food&Drinks
      * @bodyParam category_id integer required Category ID. Example: 1
      * @bodyParam social_media string required Social media link. Example: https://instagram.com/johndoe
      * 
@@ -135,6 +136,7 @@ class CollaborationController extends Controller
             'contact_number' => 'required|string|max:15',
             'category_id' => 'required|exists:categories,id',
             'social_media' => 'required|url|max:255',
+            'other_category' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -152,6 +154,7 @@ class CollaborationController extends Controller
                 'brand_name' => $request->brand_name,
                 'email' => $request->email,
                 'contact_number' => $request->contact_number,
+                'other_category' => $request->other_category,
                 'category_id' => $request->category_id,
                 'social_media' => $request->social_media,
             ]);
