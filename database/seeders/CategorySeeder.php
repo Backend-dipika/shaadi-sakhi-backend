@@ -28,6 +28,7 @@ class CategorySeeder extends Seeder
             'Festive Décor',
             'Handmade Gifts',
             'Food & Gourmet',
+            'Others'
         ];
 
         foreach ($categories as $category) {
