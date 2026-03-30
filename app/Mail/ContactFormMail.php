@@ -18,10 +18,12 @@ class ContactFormMail extends Mailable implements ShouldQueue
      * Create a new message instance.
      */
     public $contact;
+    public $categoryName;
 
-    public function __construct($contact)
+    public function __construct($contact, $categoryName)
     {
         $this->contact = $contact;
+        $this->categoryName = $categoryName;
     }
 
     /**
@@ -39,6 +41,9 @@ class ContactFormMail extends Mailable implements ShouldQueue
      */
     public function content(): Content
     {
+        // return new Content(
+        //     view: 'emails.contact',
+        // );
         return new Content(
             view: 'emails.contact',
         );

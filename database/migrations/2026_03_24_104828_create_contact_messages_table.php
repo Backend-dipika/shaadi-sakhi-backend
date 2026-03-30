@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('contact_messages', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            
+
             $table->string('name');
             $table->string('email');
             $table->string('contact_number', 15)->nullable();
-
+            $table->string('other_category')->nullable();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
 
             $table->text('message');

@@ -3,4 +3,11 @@
 <p><strong>Name:</strong> {{ $contact->name }}</p>
 <p><strong>Email:</strong> {{ $contact->email }}</p>
 <p><strong>Phone:</strong> {{ $contact->contact_number }}</p>
+<p><strong>Category:</strong>
+    @if ($categoryName === 'Others')
+        {{ $contact->other_category }}
+    @else
+        {{ $categoryName }}
+    @endif
+</p>
 <p><strong>Message:</strong> {{ $contact->message }}</p>

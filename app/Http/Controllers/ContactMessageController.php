@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ContactFormMail;
+use App\Models\Category;
 use App\Models\ContactMessage;
 use Exception;
 use Illuminate\Http\Request;
@@ -67,6 +68,7 @@ class ContactMessageController extends Controller
      * @bodyParam email string required User email address. Example: john@example.com
      * @bodyParam contact_number string required Phone number. Example: 9876543210
      * @bodyParam category_id integer required Category ID. Example: 1
+     * @bodyParam other_category string nullable Others Category. Example: Food&Drinks
      * @bodyParam message string required Message content. Example: I am interested in your services.
      * 
      * @response 201 {
@@ -102,6 +104,7 @@ class ContactMessageController extends Controller
                 'contact_number' => 'required|string|max:15',
                 'category_id' => 'required|exists:categories,id',
                 'message' => 'required|string',
+                'other_category' => 'nullable|string|max:255',
             ]);
 
             if ($validator->fails()) {
@@ -118,15 +121,22 @@ class ContactMessageController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'contact_number' => $request->contact_number,
+                'other_category' => $request->other_category,
                 'category_id' => $request->category_id,
                 'message' => $request->message,
             ]);
             try {
+                $categoryName = Category::where('id', $request->category_id)->value('name');
+                Log::info('Contact Enquiry', [
+                    'category_id' => $request->category_id,
+                    'category_name' => $categoryName,
+                    'other_category' => $request->other_category,
+                ]);
                 Log::info('sakhi', [
                     'MAIL_SEND_TO' => config('mail.admin_email')
                 ]);
                 // Send Email
-                Mail::to(config('mail.admin_email'))->queue(new ContactFormMail($contact));
+                Mail::to(config('mail.admin_email'))->queue(new ContactFormMail($contact, $categoryName));
             } catch (Exception $e) {
                 Log::error('Contact Mail Error', [
                     'error' => $e->getMessage(),
