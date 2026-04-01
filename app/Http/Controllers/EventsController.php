@@ -129,6 +129,7 @@ class EventsController extends Controller
                 'message' => 'Upcoming events fetched successfully',
                 'data' => $events
             ], 200);
+
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Something went wrong',
@@ -201,7 +202,7 @@ class EventsController extends Controller
                 foreach ($request->file('file') as $file) {
 
                     $type = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';
-                    $path = $file->store('events/' . $event->id, 'public');
+                    $path = $file->store('storage/events/' . $event->id, 'public');
 
                     EventMetaData::create([
                         'event_id' => $event->id,
@@ -314,7 +315,7 @@ class EventsController extends Controller
             if ($request->hasFile('file')) {
                 foreach ($request->file('file') as $file) {
                     $type = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';
-                    $path = $file->store('events/' . $event->id, 'public');
+                    $path = $file->store('storage/events/' . $event->id, 'public');
 
                     EventMetaData::create([
                         'event_id' => $event->id,
