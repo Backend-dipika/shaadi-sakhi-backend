@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CollaborationController;
@@ -13,6 +14,14 @@ use App\Http\Controllers\TestimonialVideoController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+// Protected routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [AuthController::class, 'user']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
+
 
 Route::get('categories', [CollaborationController::class, 'categories']);
 Route::post('/collaboration/submit', [CollaborationController::class, 'store']);
@@ -21,32 +30,32 @@ Route::post('/contact/submit', [ContactMessageController::class, 'store']);
 Route::prefix('events')->group(function () {
     Route::get('/', [EventsController::class, 'index']);
     Route::get('/upcoming', [EventsController::class, 'getUpcomingEvents']);
-    Route::post('/', [EventsController::class, 'store']);
+    Route::post('/', [EventsController::class, 'store'])->middleware('auth:sanctum');
     Route::get('/{uuid}', [EventsController::class, 'show']);
-    Route::patch('/{uuid}', [EventsController::class, 'update']);
-    Route::delete('/{uuid}', [EventsController::class, 'destroy']);
+    Route::patch('/{uuid}', [EventsController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/{uuid}', [EventsController::class, 'destroy'])->middleware('auth:sanctum');
 });
 
 Route::prefix('gallery')->group(function () {
     Route::get('/', [MediaController::class, 'index']);
-    Route::post('/', [MediaController::class, 'store']);
+    Route::post('/', [MediaController::class, 'store'])->middleware('auth:sanctum');
     Route::get('/{uuid}', [MediaController::class, 'show']);
-    Route::patch('/{uuid}', [MediaController::class, 'update']);
-    Route::delete('/{uuid}', [MediaController::class, 'destroy']);
+    Route::patch('/{uuid}', [MediaController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/{uuid}', [MediaController::class, 'destroy'])->middleware('auth:sanctum');
 });
 
 Route::prefix('testimonial')->group(function () {
     Route::get('/', [TestimonialController::class, 'index']);
-    Route::post('/', [TestimonialController::class, 'store']);
+    Route::post('/', [TestimonialController::class, 'store'])->middleware('auth:sanctum');
     Route::get('/{uuid}', [TestimonialController::class, 'show']);
-    Route::patch('/{uuid}', [TestimonialController::class, 'update']);
-    Route::delete('/{uuid}', [TestimonialController::class, 'destroy']);
+    Route::patch('/{uuid}', [TestimonialController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/{uuid}', [TestimonialController::class, 'destroy'])->middleware('auth:sanctum');
 });
 
 Route::prefix('testimonial-video')->group(function () {
     Route::get('/', [TestimonialVideoController::class, 'index']);
-    Route::post('/', [TestimonialVideoController::class, 'store']);
+    Route::post('/', [TestimonialVideoController::class, 'store'])->middleware('auth:sanctum');
     Route::get('/{uuid}', [TestimonialVideoController::class, 'show']);
-    Route::patch('/{uuid}', [TestimonialVideoController::class, 'update']);
-    Route::delete('/{uuid}', [TestimonialVideoController::class, 'destroy']);
+    Route::patch('/{uuid}', [TestimonialVideoController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/{uuid}', [TestimonialVideoController::class, 'destroy'])->middleware('auth:sanctum');
 });

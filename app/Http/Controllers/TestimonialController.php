@@ -123,15 +123,22 @@ class TestimonialController extends Controller
         }
 
         try {
+            $profilePhotoPath = null;
+            if ($request->hasFile('profile_photo')) {
+                $filePath = $request->file('profile_photo')->store('testimonials', 'public');
+
+                // Add storage prefix for public URL
+                $profilePhotoPath = 'storage/' . $filePath;
+            }
             $testimonial = Testimonial::create([
                 'uuid' => Str::uuid(),
                 'name' => $request->name,
                 'description' => $request->description,
                 'rating' => $request->rating,
                 'review' => $request->review,
-                'profile_photo' => $request->hasFile('profile_photo') ?
-                    $request->file('profile_photo')->store('testimonials', 'public') : null,
+                'profile_photo' => $profilePhotoPath,
             ]);
+
 
             return response()->json([
                 'message' => 'Testimonial added successfully',
@@ -179,7 +186,7 @@ class TestimonialController extends Controller
             return response()->json(['message' => 'Testimonial not found'], 404);
         }
 
-         $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|nullable|string',
             'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
@@ -200,13 +207,21 @@ class TestimonialController extends Controller
 
             // Replace profile photo if provided
             if ($request->hasFile('profile_photo')) {
-                // Delete old photo
-                if ($testimonial->profile_photo && Storage::disk('public')->exists($testimonial->profile_photo)) {
-                    Storage::disk('public')->delete($testimonial->profile_photo);
+                // Remove "storage/" if you're saving full path in DB
+                $oldPath = str_replace('storage/', '', $testimonial->profile_photo);
+
+                // Delete old file (if exists)
+                if ($testimonial->profile_photo && Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
                 }
-                // Save new photo
-                $testimonial->profile_photo = $request->file('profile_photo')->store('testimonials', 'public');
-                $testimonial->save();
+
+                // Upload new file
+                $filePath = $request->file('profile_photo')->store('testimonials', 'public');
+
+                // Save with storage prefix
+                $testimonial->update([
+                    'profile_photo' => 'storage/' . $filePath
+                ]);
             }
 
             return response()->json([
@@ -246,8 +261,11 @@ class TestimonialController extends Controller
 
         try {
             // Delete profile photo if exists
-            if ($testimonial->profile_photo && Storage::disk('public')->exists($testimonial->profile_photo)) {
-                Storage::disk('public')->delete($testimonial->profile_photo);
+            $oldPath = str_replace('storage/', '', $testimonial->profile_photo);
+
+            // Delete old file (if exists)
+            if ($testimonial->profile_photo && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
             }
 
             $testimonial->delete();

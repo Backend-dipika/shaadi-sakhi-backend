@@ -47,7 +47,6 @@ class EventsController extends Controller
                 'message' => 'Events fetched successfully',
                 'data' => $events
             ], 200);
-            
         } catch (Exception $e) {
             Log::warning('Error in Events', [
                 'message' =>  $e->getMessage(),
@@ -130,7 +129,6 @@ class EventsController extends Controller
                 'message' => 'Upcoming events fetched successfully',
                 'data' => $events
             ], 200);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Something went wrong',
@@ -208,7 +206,7 @@ class EventsController extends Controller
                     EventMetaData::create([
                         'event_id' => $event->id,
                         'type' => $type,
-                        'path' => 'storage/'.$path,
+                        'path' => 'storage/' . $path,
                     ]);
                 }
             }
@@ -302,12 +300,22 @@ class EventsController extends Controller
 
             // Delete existing files if requested
             if ($request->has('delete_files')) {
-                $filesToDelete = EventMetaData::whereIn('id', $request->delete_files)->where('event_id', $event->id)->get();
+
+                $filesToDelete = EventMetaData::whereIn('id', $request->delete_files)
+                    ->where('event_id', $event->id)
+                    ->get();
 
                 foreach ($filesToDelete as $fileMeta) {
-                    if (Storage::disk('public')->exists($fileMeta->path)) {
-                        Storage::disk('public')->delete($fileMeta->path);
+
+                    // Normalize path (remove "storage/")
+                    $oldPath = str_replace('storage/', '', $fileMeta->path);
+
+                    // Delete file
+                    if ($fileMeta->path && Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
                     }
+
+                    // Delete DB record
                     $fileMeta->delete();
                 }
             }
@@ -321,7 +329,7 @@ class EventsController extends Controller
                     EventMetaData::create([
                         'event_id' => $event->id,
                         'type' => $type,
-                        'path' => 'storage/'.$path,
+                        'path' => 'storage/' . $path,
                     ]);
                 }
             }
@@ -366,8 +374,10 @@ class EventsController extends Controller
         try {
             // Delete associated files from storage
             foreach ($event->metadata as $meta) {
-                if (Storage::disk('public')->exists($meta->path)) {
-                    Storage::disk('public')->delete($meta->path);
+                $oldPath = str_replace('storage/', '', $meta->path);
+
+                if ($meta->path && Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
                 }
             }
 

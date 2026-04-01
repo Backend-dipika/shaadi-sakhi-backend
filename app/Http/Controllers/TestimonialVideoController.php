@@ -69,11 +69,15 @@ class TestimonialVideoController extends Controller
         }
 
         try {
-            $path = $request->file('video')->store('video_testimonials', 'public');
+
+            $filePath = $request->file('video')->store('video_testimonials', 'public');
+
+            // Add storage prefix (if you want full URL path in DB)
+            $videoPath = 'storage/' . $filePath;
 
             $video = VideoTestimonial::create([
                 'uuid' => Str::uuid(),
-                'video_path' => $path,
+                'video_path' => $videoPath,
             ]);
 
             return response()->json([
@@ -147,14 +151,21 @@ class TestimonialVideoController extends Controller
 
         try {
             if ($request->hasFile('video')) {
-                // delete old
-                if ($video->video_path && Storage::disk('public')->exists($video->video_path)) {
-                    Storage::disk('public')->delete($video->video_path);
+                // Normalize old path (remove "storage/" if present)
+                $oldPath = str_replace('storage/', '', $video->video_path);
+
+                // Delete old file safely
+                if ($video->video_path && Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
                 }
 
-                // upload new
-                $video->video_path = $request->file('video')->store('video_testimonials', 'public');
-                $video->save();
+                // Upload new file
+                $filePath = $request->file('video')->store('video_testimonials', 'public');
+
+                // Save new path (recommended: WITHOUT storage/)
+                $video->update([
+                    'video_path' => 'storage/' . $filePath
+                ]);
             }
 
             return response()->json([
@@ -186,8 +197,10 @@ class TestimonialVideoController extends Controller
                 return response()->json(['message' => 'Not found'], 404);
             }
 
-            if ($video->video_path && Storage::disk('public')->exists($video->video_path)) {
-                Storage::disk('public')->delete($video->video_path);
+            $path = str_replace('storage/', '', $video->video_path);
+
+            if ($video->video_path && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
             }
 
             $video->delete();

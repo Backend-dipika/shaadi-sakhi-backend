@@ -160,30 +160,33 @@ class MediaController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
             ]);
+
             if ($request->hasFile('cover_photo')) {
 
+                // Upload new cover
                 $filePath = $request->file('cover_photo')->store(
                     'media/' . $media->id . '/cover',
                     'public'
                 );
 
-                // Add "storage/" prefix for public access
-                $coverPath = 'storage/' . $filePath;
+                // Store WITH storage/ prefix
                 $media->update([
-                    'cover_photo' => $coverPath
+                    'cover_photo' => 'storage/' . $filePath
                 ]);
             }
 
             // Store additional files in meta
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
+
                     $type = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';
-                    $path = $file->store('media/' . $media->id, 'public');
+
+                    $filePath = $file->store('media/' . $media->id, 'public');
 
                     MediaMetaData::create([
                         'media_id' => $media->id,
                         'type' => $type,
-                        'path' => 'storage/' . $path
+                        'path' => 'storage/' . $filePath // ✅ add prefix
                     ]);
                 }
             }
@@ -256,39 +259,43 @@ class MediaController extends Controller
         try {
             $media->update($request->only(['title', 'description']));
 
-            // Update cover photo
-            // if ($request->hasFile('cover_photo')) {
-            //     if ($media->cover_photo && Storage::disk('public')->exists($media->cover_photo)) {
-            //         Storage::disk('public')->delete($media->cover_photo);
-            //     }
-            //     $media->cover_photo = $request->file('cover_photo')->store('media/' . $media->id . '/' . 'cover/', 'public');
-            //     $media->save();
-            // }
             if ($request->hasFile('cover_photo')) {
 
-                if ($media->cover_photo && Storage::disk('public')->exists($media->cover_photo)) {
-                    Storage::disk('public')->delete($media->cover_photo);
+                // Normalize old path (remove "storage/")
+                $oldPath = str_replace('storage/', '', $media->cover_photo);
+
+                // Delete old cover
+                if ($media->cover_photo && Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
                 }
 
+                // Upload new cover
                 $filePath = $request->file('cover_photo')->store(
                     'media/' . $media->id . '/cover',
                     'public'
                 );
 
-                // Add "storage/" prefix for public access
-                $coverPath = 'storage/' . $filePath;
+                // Store WITH storage/ prefix
                 $media->update([
-                    'cover_photo' => $coverPath
+                    'cover_photo' => 'storage/' . $filePath
                 ]);
             }
 
             // Delete existing meta files
             if ($request->has('delete_files')) {
-                $filesToDelete = MediaMetaData::whereIn('id', $request->delete_files)->where('media_id', $media->id)->get();
+                $filesToDelete = MediaMetaData::whereIn('id', $request->delete_files)
+                    ->where('media_id', $media->id)
+                    ->get();
+
                 foreach ($filesToDelete as $file) {
-                    if (Storage::disk('public')->exists($file->path)) {
-                        Storage::disk('public')->delete($file->path);
+
+                    // Normalize path
+                    $oldPath = str_replace('storage/', '', $file->path);
+
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
                     }
+
                     $file->delete();
                 }
             }
@@ -296,13 +303,15 @@ class MediaController extends Controller
             // Add new files
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
+
                     $type = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';
-                    $path = $file->store('media/' . $media->id, 'public');
+
+                    $filePath = $file->store('media/' . $media->id, 'public');
 
                     MediaMetaData::create([
                         'media_id' => $media->id,
                         'type' => $type,
-                        'path' => $path
+                        'path' => 'storage/' . $filePath // ✅ add prefix
                     ]);
                 }
             }
@@ -338,17 +347,9 @@ class MediaController extends Controller
         }
 
         try {
-            // Delete all meta files
-            foreach ($media->meta as $file) {
-                if (Storage::disk('public')->exists($file->path)) {
-                    Storage::disk('public')->delete($file->path);
-                }
-            }
+            Storage::disk('public')->deleteDirectory('media/' . $media->id);
 
-            // Delete cover photo
-            if ($media->cover_photo && Storage::disk('public')->exists($media->cover_photo)) {
-                Storage::disk('public')->delete($media->cover_photo);
-            }
+            $media->meta()->delete();
 
             // Delete media (cascades to children and meta due to foreign keys)
             $media->delete();
