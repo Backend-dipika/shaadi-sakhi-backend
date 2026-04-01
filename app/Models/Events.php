@@ -22,6 +22,6 @@ class Events extends Model
 
     public function metadata()
     {
-        return $this->hasMany(EventMetadata::class, 'event_id');
+        return $this->hasMany(EventMetaData::class, 'event_id');
     }
 }
