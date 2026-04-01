@@ -41,12 +41,13 @@ class EventsController extends Controller
     public function index(Request $request)
     {
         try {
-            $events = Events::latest()->paginate(10);
+            $events = Events::with('metadata')->latest()->paginate(10);
 
             return response()->json([
                 'message' => 'Events fetched successfully',
                 'data' => $events
             ], 200);
+            
         } catch (Exception $e) {
             Log::warning('Error in Events', [
                 'message' =>  $e->getMessage(),
