@@ -202,12 +202,12 @@ class EventsController extends Controller
                 foreach ($request->file('file') as $file) {
 
                     $type = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';
-                    $path = $file->store('storage/events/' . $event->id, 'public');
+                    $path = $file->store('events/' . $event->id, 'public');
 
                     EventMetaData::create([
                         'event_id' => $event->id,
                         'type' => $type,
-                        'path' => $path,
+                        'path' => 'storage/'.$path,
                     ]);
                 }
             }
@@ -315,12 +315,12 @@ class EventsController extends Controller
             if ($request->hasFile('file')) {
                 foreach ($request->file('file') as $file) {
                     $type = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';
-                    $path = $file->store('storage/events/' . $event->id, 'public');
+                    $path = $file->store('events/' . $event->id, 'public');
 
                     EventMetaData::create([
                         'event_id' => $event->id,
                         'type' => $type,
-                        'path' => $path,
+                        'path' => 'storage/'.$path,
                     ]);
                 }
             }
