@@ -39,7 +39,7 @@ Route::prefix('events')->group(function () {
 Route::prefix('gallery')->group(function () {
     Route::get('/', [MediaController::class, 'index']);
     Route::post('/', [MediaController::class, 'store'])->middleware('auth:sanctum');
-    // Route::get('/{uuid}', [MediaController::class, 'show']);
+    Route::get('/{uuid}', [MediaController::class, 'show']);
     Route::patch('/{uuid}', [MediaController::class, 'update'])->middleware('auth:sanctum');
     Route::delete('/{uuid}', [MediaController::class, 'destroy'])->middleware('auth:sanctum');
 });
