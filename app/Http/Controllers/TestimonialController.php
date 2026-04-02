@@ -60,7 +60,7 @@ class TestimonialController extends Controller
      *       "name": "John Doe",
      *       "description": "Great service!",
      *       "rating": 5,
-     *       "review": 5,
+     *       "review": "good",
      *       "profile_photo": "testimonials/photo.jpg"
      *   }
      * }
@@ -87,7 +87,7 @@ class TestimonialController extends Controller
      * @bodyParam description string optional Description. Example: "Excellent experience"
      * @bodyParam profile_photo file optional Profile photo (jpg, jpeg, png, max 10MB)
      * @bodyParam rating integer required Rating 1-5. Example: 5
-     * @bodyParam review integer optional Review score 0-5. Example: 5
+     * @bodyParam review string optional Review . Example: "Good"
      *
      * @response 201 {
      *   "message": "Testimonial added successfully",
@@ -97,7 +97,7 @@ class TestimonialController extends Controller
      *       "name": "John Doe",
      *       "description": "Excellent experience",
      *       "rating": 5,
-     *       "review": 5,
+     *       "review": "Good",
      *       "profile_photo": "testimonials/photo.jpg"
      *   }
      * }
@@ -159,7 +159,7 @@ class TestimonialController extends Controller
      * @bodyParam description string optional Description
      * @bodyParam profile_photo file optional New profile photo (jpg, jpeg, png, max 10MB)
      * @bodyParam rating integer optional Rating 1-5
-     * @bodyParam review integer optional Review score 0-5
+     * @bodyParam review string optional Review . Example: "Good"
      *
      * @response 200 {
      *   "message": "Testimonial updated successfully",
