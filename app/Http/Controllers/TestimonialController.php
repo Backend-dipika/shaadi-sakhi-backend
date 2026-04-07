@@ -181,6 +181,7 @@ class TestimonialController extends Controller
      */
     public function update(Request $request, $uuid)
     {
+        Log::info('Update Testimonial Request Data:', $request->all());
         $testimonial = Testimonial::where('uuid', $uuid)->first();
         if (!$testimonial) {
             return response()->json(['message' => 'Testimonial not found'], 404);
