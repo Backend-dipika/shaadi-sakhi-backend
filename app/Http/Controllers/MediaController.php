@@ -235,26 +235,26 @@ class MediaController extends Controller
      */
     public function update(Request $request, $uuid)
     {
-        Log::info('===== MEDIA UPDATE DEBUG START =====');
+        // Log::info('===== MEDIA UPDATE DEBUG START =====');
 
-        Log::info('All Input:', $request->all());
+        // Log::info('All Input:', $request->all());
 
-        Log::info('All Files:', $request->allFiles());
+        // Log::info('All Files:', $request->allFiles());
 
-        Log::info('Has cover_photo:', [$request->hasFile('cover_photo')]);
+        // Log::info('Has cover_photo:', [$request->hasFile('cover_photo')]);
 
-        Log::info('Has files:', [$request->hasFile('files')]);
+        // Log::info('Has files:', [$request->hasFile('files')]);
 
-        Log::info('Files content:', [
-            'files' => $request->file('files'),
-            'cover_photo' => $request->file('cover_photo'),
-        ]);
+        // Log::info('Files content:', [
+        //     'files' => $request->file('files'),
+        //     'cover_photo' => $request->file('cover_photo'),
+        // ]);
 
-        Log::info('Delete Files:', [
-            'delete_files' => $request->input('delete_files')
-        ]);
+        // Log::info('Delete Files:', [
+        //     'delete_files' => $request->input('delete_files')
+        // ]);
 
-        Log::info('===== MEDIA UPDATE DEBUG END =====');
+        // Log::info('===== MEDIA UPDATE DEBUG END =====');
         
         $media = Media::where('uuid', $uuid)->first();
         if (!$media) {
