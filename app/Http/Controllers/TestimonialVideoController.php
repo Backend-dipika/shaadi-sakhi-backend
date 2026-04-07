@@ -58,7 +58,7 @@ class TestimonialVideoController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'video' => 'required|file|mimes:mp4,mov|max:51200', // 50MB
+            'video' => 'required|file|mimes:mp4,mov|max:61200', // max 60MB
         ]);
 
         if ($validator->fails()) {
@@ -139,7 +139,7 @@ class TestimonialVideoController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'video' => 'required|file|mimes:mp4,mov|max:51200',
+            'video' => 'required|file|mimes:mp4,mov|max:61200', 
         ]);
 
         if ($validator->fails()) {
