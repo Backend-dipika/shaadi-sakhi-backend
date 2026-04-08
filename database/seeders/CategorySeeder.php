@@ -28,6 +28,8 @@ class CategorySeeder extends Seeder
             'Festive Décor',
             'Handmade Gifts',
             'Food & Gourmet',
+            'Casual wear',
+            'Home Linen',
             'Others'
         ];
 
